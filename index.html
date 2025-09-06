@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>足球比赛信息</title>
+</head>
+<body>
+    <h1>足球比赛列表</h1>
+    <ul id="matchList"></ul>
+
+    <script>
+        const apiToken = '979c8606666865ca9068244c75a294a14a8682e112c2222ae06158593ae3';
+        const sportId = 1; // 足球项目
+        const categoryId = 575; // 特定比赛类别
+        const tournamentId = 3; // 特定锦标赛
+
+        fetch(`https://widgets.oddspedia.com/api/matches?api_token=${apiToken}&lang=en&sport_id=${sportId}&category_id=${categoryId}&tournament_id=${tournamentId}`)
+            .then(response => response.json())
+            .then(data => {
+                const matchList = document.getElementById('matchList');
+                data.forEach(match => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = `${match.home_team} vs ${match.away_team} - ${match.start_time}`;
+                    matchList.appendChild(listItem);
+                });
+            })
+            .catch(error => {
+                console.error('获取比赛信息失败:', error);
+            });
+    </script>
+</body>
+</html>
