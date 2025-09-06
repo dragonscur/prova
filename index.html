@@ -3,31 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>足球比赛信息</title>
+    <title>足球比赛和赔率</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        h1 { text-align: center; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+        th { background-color: #f4f4f4; }
+    </style>
 </head>
 <body>
-    <h1>足球比赛列表</h1>
-    <ul id="matchList"></ul>
+    <h1>足球比赛和赔率</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>比赛时间</th>
+                <th>主队</th>
+                <th>客队</th>
+                <th>比分</th>
+                <th>赔率（主胜/平/客胜）</th>
+            </tr>
+        </thead>
+        <tbody id="matchTableBody">
+            <tr><td colspan="5">正在加载比赛数据...</td></tr>
+        </tbody>
+    </table>
 
     <script>
         const apiToken = '979c8606666865ca9068244c75a294a14a8682e112c2222ae06158593ae3';
-        const sportId = 1; // 足球项目
-        const categoryId = 575; // 特定比赛类别
-        const tournamentId = 3; // 特定锦标赛
+        const sportId = 1; // 足球
+        const categoryId = 575; // World 类别
+        const tournamentId = 3; // World Cup 锦标赛
+
+        const tableBody = document.getElementById('matchTableBody');
 
         fetch(`https://widgets.oddspedia.com/api/matches?api_token=${apiToken}&lang=en&sport_id=${sportId}&category_id=${categoryId}&tournament_id=${tournamentId}`)
             .then(response => response.json())
             .then(data => {
-                const matchList = document.getElementById('matchList');
-                data.forEach(match => {
-                    const listItem = document.createElement('li');
-                    listItem.textContent = `${match.home_team} vs ${match.away_team} - ${match.start_time}`;
-                    matchList.appendChild(listItem);
-                });
-            })
-            .catch(error => {
-                console.error('获取比赛信息失败:', error);
-            });
-    </script>
-</body>
-</html>
+                tableBody.innerHTML = ''; // 清空加载提示
+
+                const matches = data.match_list[0].categories[0].leagues[0].matches;
+
+                matches.forEach(match => {
+                    const row = document.createElement('tr');
+
+                    const date = new Date(match.md).toLocaleString();
+                    const score = (match.hscore !== null && match.ascore !== null) ? `${match.hscore} : ${match.ascore}` : '-';
+
